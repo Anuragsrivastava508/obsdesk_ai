@@ -1,0 +1,102 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpsDesk AI API",
+    "description": "Intelligent Travel Operations & Support Management Platform – VOYAGEX. Beyond Tickets. Towards Intelligent Operations.",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "/api/v1" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "security": [],
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "JWT access token and user" } }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout (stateless – client discards token)",
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Current user",
+        "responses": { "200": { "description": "Authenticated user" } }
+      }
+    },
+    "/users": {
+      "get": { "summary": "List users (ADMIN/MANAGER)", "responses": { "200": { "description": "Paginated users" } } },
+      "post": { "summary": "Create user (ADMIN)", "responses": { "201": { "description": "Created" } } }
+    },
+    "/users/{id}": {
+      "get": { "summary": "Get user", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "User" } } },
+      "patch": { "summary": "Update user (ADMIN)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Updated" } } }
+    },
+    "/tickets": {
+      "get": { "summary": "List tickets", "responses": { "200": { "description": "Paginated tickets" } } },
+      "post": { "summary": "Create ticket", "responses": { "201": { "description": "Created" } } }
+    },
+    "/tickets/{id}": {
+      "get": { "summary": "Ticket details", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Ticket" } } },
+      "patch": { "summary": "Update ticket fields", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Updated" } } }
+    },
+    "/tickets/{id}/assign": {
+      "patch": { "summary": "Assign ticket (ADMIN/MANAGER)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Assigned" } } }
+    },
+    "/tickets/{id}/status": {
+      "patch": { "summary": "Change ticket status", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Status updated" } } }
+    },
+    "/tickets/{id}/related": {
+      "get": { "summary": "Rule-based related tickets", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Related matches" } } }
+    },
+    "/tickets/{id}/conversations": {
+      "get": { "summary": "Conversation history", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Messages oldest first" } } },
+      "post": { "summary": "Add INTERNAL_NOTE or SUPPLIER_DRAFT", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "201": { "description": "Created" } } }
+    },
+    "/conversations/{id}/approve": {
+      "patch": { "summary": "Approve/reject supplier draft (ADMIN/MANAGER). Never sends externally.", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Approval status updated" } } }
+    },
+    "/dashboard/summary": {
+      "get": { "summary": "Dashboard summary", "responses": { "200": { "description": "Counts" } } }
+    },
+    "/dashboard/analytics": {
+      "get": { "summary": "Analytics by category/priority/status", "responses": { "200": { "description": "Aggregations" } } }
+    },
+    "/dashboard/agent-workload": {
+      "get": { "summary": "Active tickets per agent", "responses": { "200": { "description": "Workload" } } }
+    },
+    "/sla/overview": {
+      "get": { "summary": "SLA state counts", "responses": { "200": { "description": "ON_TRACK / APPROACHING / BREACHED" } } }
+    },
+    "/sla/breached": {
+      "get": { "summary": "Paginated breached tickets", "responses": { "200": { "description": "Breached list" } } }
+    }
+  }
+}
