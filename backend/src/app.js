@@ -7,8 +7,10 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
+import { env } from './config/env.js';
 import { globalLimiter } from './middleware/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { ApiError } from './utils/ApiError.js';
 import { sendSuccess } from './utils/response.js';
 
 import authRoutes from './routes/authRoutes.js';
@@ -25,7 +27,14 @@ const openapi = JSON.parse(readFileSync(join(__dirname, 'docs', 'openapi.json'),
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || env.corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new ApiError(403, 'Origin not allowed'));
+  },
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(globalLimiter);

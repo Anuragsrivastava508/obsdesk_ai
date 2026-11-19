@@ -2,6 +2,11 @@ node_modules/
 .env
 coverage/
 *.log
+.env.production
+.env.production.local
+*.tmp
+*.temp
+*.bak
 .DS_Store
 .vscode/
 .idea/

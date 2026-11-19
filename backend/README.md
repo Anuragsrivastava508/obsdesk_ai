@@ -15,7 +15,7 @@ MERN backend MVP for intelligent travel operations & support (Express + MongoDB)
 ```bash
 cd backend
 cp .env.example .env
-# edit .env — set MONGODB_URI and JWT_SECRET
+# edit .env — set MONGODB_URI, JWT_SECRET, CORS_ORIGINS, and unique seed passwords
 npm install
 npm run seed
 npm run dev
@@ -30,19 +30,19 @@ npm run dev
 | Variable | Required | Notes |
 |---|---|---|
 | `MONGODB_URI` | Yes | Local or Atlas connection string |
-| `JWT_SECRET` | Yes | Long random string |
+| `JWT_SECRET` | Yes | Production requires at least 32 characters of high-entropy randomness |
 | `PORT` | No | Default `5000` |
 | `JWT_EXPIRES_IN` | No | Default `8h` |
-| `SEED_*_PASSWORD` | No | Override seed passwords |
+| `CORS_ORIGINS` | Production | Comma-separated HTTPS frontend origins; local development defaults to localhost ports `5173` and `4173` |
+| `SEED_*_PASSWORD` | Seed only | Set unique local passwords before seeding; never use demo/default passwords in production |
 
-## Dev credentials (NEVER use in production)
+## Production configuration
 
-| Role | Email | Password |
-|---|---|---|
-| ADMIN | `admin@voyagex.demo` | `Admin@12345` |
-| MANAGER | `manager@voyagex.demo` | `Manager@12345` |
-| AGENT | `agent@voyagex.demo` | `Agent@12345` |
-| Other org ADMIN | `admin@acme.demo` | `Admin@12345` |
+- Set `NODE_ENV=production`.
+- Configure a unique, high-entropy `JWT_SECRET`; startup rejects weak, placeholder, and known demo secrets without logging the configured value.
+- Set `CORS_ORIGINS` to the exact HTTPS origins of every frontend that may call this API, separated by commas. Wildcards, paths, and non-HTTPS production origins are rejected.
+- Configure `VITE_API_BASE_URL` in the frontend build environment to the deployed HTTPS API URL ending in `/api/v1`.
+- Never run the demo seed script against a production database.
 
 ## Scripts
 
